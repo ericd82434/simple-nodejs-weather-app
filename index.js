@@ -5,6 +5,8 @@ let apiKey = '0f73c02d9449f127ea68dc0d7760fb5f';
 let city = argv.c || 'council bluffs';
 let url = `http://api.openweathermap.org/data/2.5/weather?q=${city}&units=imperial&appid=${apiKey}`
 
+let url2 = `http://api.openweathermap.org/data/2.5/forecast?q=${city}&units=imperial&appid=${apiKey}`
+
 request(url, function (err, response, body) {
   if(err){
     console.log('error:', error);
@@ -26,6 +28,43 @@ request(url, function (err, response, body) {
     console.log(message);
   }
 });
+
+request(url2, function (err, response, body) {
+  if(err){
+    console.log('error:', error);
+  } else {
+    console.log('body:', body);
+    let forecast = JSON.parse(body);
+    let message = ` ${forecast.list.length} `;
+    for (var i = 0; i < `${forecast.list.length}`; i=i+1){
+      var date = new Date(`${forecast.list[i].dt}` * 1000);
+      var display_date = date.toLocaleDateString()+" "+date.toLocaleTimeString();
+      var timestr = date.toLocaleTimeString();
+      //console.log(date, timestr);
+
+
+      //console.log(`${forecast.list[i].dt}`);
+      //var date = new Date(`${forecast.list[i].dt}`);
+      //console.log(convertUTCDateToLocalDate(`${forecast.list[i].dt}`));
+      console.log(`Date ${display_date} high: ${forecast.list[i].main.temp_max}  low: ${forecast.list[i].main.temp_min}  forecast ${forecast.list[i].weather[0].description} `);
+
+    }
+
+    console.log(message);
+
+  }
+});
+
+function convertUTCDateToLocalDate(date) {
+    var newDate = new Date(date.getTime()+date.getTimezoneOffset()*60*1000);
+
+    var offset = date.getTimezoneOffset() / 60;
+    var hours = date.getHours();
+
+    newDate.setHours(hours - offset);
+
+    return newDate;
+}
 
 function  toTextualDescription(degree){
     if (degree>337.5) return 'N';
